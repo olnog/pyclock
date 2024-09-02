@@ -6,7 +6,12 @@ DAYSINCYCLE = 1000
 TOMETRIC = 1.157
 SECONDSINDAY = 100000
 
+'''
+TODO:
+add timers
+let alarms have decimals
 
+'''
 alarms = []
 alarmsTriggered = []
 
