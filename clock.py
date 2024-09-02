@@ -14,7 +14,6 @@ let alarms have decimals
 '''
 alarms = []
 alarmsTriggered = []
-
 def displayAlarms(seconds):
     alarmTxt = ""
     for id, alarm in enumerate(alarms):
@@ -56,9 +55,12 @@ def loadAlarms():
         id = alarms.index(value)
         del alarmsTriggered[id]
         del alarms[id]
-    
+
+def loadTimers():    
 
 loadAlarms()
+loadTimers()
+
 while 1==1:
     alarmTxt = ""
     seconds = math.floor((time.time() - 50000) * TOMETRIC) #the 50k is to have it start at noon instead of midnight
@@ -66,8 +68,9 @@ while 1==1:
     seconds = math.floor(seconds % SECONDSINDAY)
     cycle = math.floor(days / DAYSINCYCLE)
     date = math.floor(days % DAYSINCYCLE)
-    if (seconds % 25 == 0):
+    if (seconds % 5 == 0):
         loadAlarms()
+        loadTimers()
     alarmTxt = displayAlarms(seconds)
             
     
