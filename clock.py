@@ -51,7 +51,7 @@ def loadAlarms():
             deletingValues.append(alarms[id])
 
     for elid, value in enumerate(deletingValues):
-        print ("\n" + str(value) + " deleted")
+        print ("\n alarm for " + str(value) + " deleted")
         id = alarms.index(value)
         del alarmsTriggered[id]
         del alarms[id]
