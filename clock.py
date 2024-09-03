@@ -10,16 +10,17 @@ SECONDSINDAY = 100000
 TODO:
 add timers
 let alarms have decimals
+ignore blank spaces
 
+BUGS:
+when you add a new alarm after an alarm has been cleared, it starts newlining like crazy
 '''
 alarms = []
 alarmsTriggered = []
 def displayAlarms(seconds):
     alarmTxt = ""
     for id, alarm in enumerate(alarms):
-        if (alarmsTriggered[id]):
-            continue
-        
+
         if (alarmTxt != ""):
             alarmTxt += ", "                
         diff = alarm - seconds
@@ -38,7 +39,9 @@ def loadAlarms():
         deletedAlarms.append(True)
     with open(ALARMFILE) as file:
         while line := file.readline():
-            value = int(line.rstrip()) * 1000
+            value = int(float(line.rstrip()) * 1000)
+            if (value == ""):
+                continue
             if (value not in alarms):
                 alarms.append(value)
                 alarmsTriggered.append(False)
@@ -57,7 +60,7 @@ def loadAlarms():
         del alarms[id]
 
 def loadTimers():    
-
+    timer = 2
 loadAlarms()
 loadTimers()
 
