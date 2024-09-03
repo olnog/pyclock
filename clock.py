@@ -15,6 +15,7 @@ when you add a new alarm after an alarm has been cleared, it starts newlining li
 '''
 alarms = []
 alarmsTriggered = []
+timers = []
 def displayAlarms(seconds):
     alarmTxt = ""
     for id, alarm in enumerate(alarms):
@@ -25,7 +26,7 @@ def displayAlarms(seconds):
         if (seconds >= alarm):
             diff += SECONDSINDAY
         possTxt = format(alarm, ',') + " [" + format(diff, ',') + "]"
-        if (seconds >= alarm and alarm > seconds - 10):
+        if (alarmsTriggered[id] or (seconds >= alarm and alarm > seconds - 10)):
             possTxt = format(alarm, ',') + " [!!!]"
             alarmsTriggered[id] = True
         alarmTxt += possTxt    
