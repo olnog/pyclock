@@ -1,83 +1,37 @@
-import math
-import time
-ALARMFILE = 'alarms.txt'
-DAYSTOUNIX = 4371677 # 11,969 * 365.25 rounded down
-DAYSINCYCLE = 1000
-TOMETRIC = 1.157
-SECONDSINDAY = 100000
+from functions import *
+INCREMENTTODAYEVERY = 1000
+LOADEVERY = 10
+today = loadToday()
 
 '''
 TODO:
-add timers
 
 BUGS:
+ DONE: i shouldn't be able to put an alarm that is larger than 100
 when you add a new alarm after an alarm has been cleared, it starts newlining like crazy
 '''
-alarms = []
-alarmsTriggered = []
-timers = []
-def displayAlarms(seconds):
-    alarmTxt = ""
-    for id, alarm in enumerate(alarms):
 
-        if (alarmTxt != ""):
-            alarmTxt += ", "                
-        diff = alarm - seconds
-        if (seconds >= alarm):
-            diff += SECONDSINDAY
-        possTxt = format(alarm, ',') + " [" + format(diff, ',') + "]"
-        if (alarmsTriggered[id] or (seconds >= alarm and alarm > seconds - 10)):
-            possTxt = format(alarm, ',') + " [!!!]"
-            alarmsTriggered[id] = True
-        alarmTxt += possTxt    
-    return alarmTxt
 
-def loadAlarms():
-    deletedAlarms = []
-    for id, element in enumerate(alarms):
-        deletedAlarms.append(True)
-    with open(ALARMFILE) as file:
-        while line := file.readline():
-            if (line == "\n"):
-                continue
-            value = int(float(line.rstrip()) * 1000)            
-            if (value not in alarms):
-                alarms.append(value)
-                alarmsTriggered.append(False)
-                deletedAlarms.append(False)
-                continue
-            deletedAlarms[alarms.index(value)] = False
-    deletingValues = []
-    for id, deleting in enumerate(deletedAlarms):        
-        if (deleting):
-            deletingValues.append(alarms[id])
-
-    for elid, value in enumerate(deletingValues):
-        print ("\n alarm for " + str(value) + " deleted")
-        id = alarms.index(value)
-        del alarmsTriggered[id]
-        del alarms[id]
-
-def loadTimers():    
-    timer = 2
-loadAlarms()
-loadTimers()
+loadAlarms(today['seconds'])
+loadTimers(today['seconds'])
 
 while 1==1:
+
+    if (today['seconds'] % INCREMENTTODAYEVERY == 0):
+        today = loadToday()
+    else: 
+        today = incrementToday(today)
     alarmTxt = ""
-    seconds = math.floor((time.time() - 50000) * TOMETRIC) #the 50k is to have it start at noon instead of midnight
-    days = DAYSTOUNIX + math.floor(seconds / SECONDSINDAY)
-    seconds = math.floor(seconds % SECONDSINDAY)
-    cycle = math.floor(days / DAYSINCYCLE)
-    date = math.floor(days % DAYSINCYCLE)
-    if (seconds % 5 == 0):
-        loadAlarms()
-        loadTimers()
-    alarmTxt = displayAlarms(seconds)
+    
+    if (today['seconds'] % LOADEVERY == 0):
+        loadAlarms(today['seconds'])
+        loadTimers(today['seconds'])
+    alarmTxt = displayAlarms(today['seconds'])
             
     
     
-    print (str(cycle) + "-" + str(date) + ": " + format(seconds, ',') + " (" + alarmTxt + ")", end="\r")
+    print (str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " (" + alarmTxt + ")", end="\r")
     
-    
+    decrementTimers()
+
     time.sleep(.864)
