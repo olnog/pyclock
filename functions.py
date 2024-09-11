@@ -13,6 +13,11 @@ alarms = []
 alarmsTriggered = []
 timers = []
 originalTimers = []
+
+def addToAlarmFile(value):
+    with open(ALARMFILE, "a") as myfile:
+        myfile.write("\n" + value)
+
 def createAlarm(value):
     alarms.append(value)
     alarmsTriggered.append(False)
@@ -28,6 +33,17 @@ def createTimer (timer, original):
 def decrementTimers():
     for id, timer in enumerate(timers):
         timers[id]-= 1
+
+def deleteAlarm(value):
+    with open(ALARMFILE, "r") as fp:
+        lines = fp.readlines()
+
+    with open(ALARMFILE, "w") as fp:
+        for line in lines:
+            if line.strip("\n") != value:
+                fp.write(line)
+
+
 def displayAlarms(seconds):
     alarmTxt = ""
     for id, alarm in enumerate(alarms):
@@ -39,9 +55,10 @@ def displayAlarms(seconds):
             possTxt = format(alarm, ',') 
         possTxt += " [" + format(timers[id], ',') + "]"
         if (alarmsTriggered[id] or (timers[id] < 0)):
-            curses.initscr()
-            curses.flash()
-            curses.beep()
+
+            if alarmsTriggered[id] == False:
+                curses.flash()
+                curses.beep()
             possTxt = "-"
             if (alarm != None):
                 possTxt = format(alarm, ',')

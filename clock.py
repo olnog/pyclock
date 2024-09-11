@@ -45,6 +45,8 @@ def outputThreadFunc(today):
 
         try:
             input = commandQueue.get(timeout=0.1)
+            if input == 'q' or input == 'x':
+                return
             inputTxt = processInput(input)
         except Empty:
             pass
