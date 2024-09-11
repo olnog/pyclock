@@ -1,5 +1,5 @@
+import curses
 import math
-import time
 
 ALARMFILE = 'alarms.txt'
 DAYSTOUNIX = 4371677 # 11,969 * 365.25 rounded down
@@ -33,7 +33,13 @@ def displayAlarms(seconds):
             possTxt = format(alarm, ',') 
         possTxt += " [" + format(timers[id], ',') + "]"
         if (alarmsTriggered[id] or (timers[id] < 0)):
-            possTxt = format(alarm, ',') + " [!!!]"
+            curses.initscr()
+            curses.flash()
+            curses.beep()
+            possTxt = "-"
+            if (alarm != None):
+                possTxt = format(alarm, ',')
+                possTxt += " [!!!]"
             alarmsTriggered[id] = True
         alarmTxt += possTxt    
     return alarmTxt
@@ -64,7 +70,7 @@ def loadAlarms(seconds):
             if (line == "\n"):
                 continue
             value = int(float(line.rstrip()) * 1000)
-            if (value > 100):
+            if (value > SECONDSINDAY):
                 continue
             if (value not in alarms):
                 alarms.append(value)
@@ -83,7 +89,9 @@ def loadAlarms(seconds):
         print ("\n alarm for " + str(value) + " deleted")
         id = alarms.index(value)
         del alarmsTriggered[id]
+        del timers[id]
         del alarms[id]
+
 
 def loadTimers(seconds):    
 
