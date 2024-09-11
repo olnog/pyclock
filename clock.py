@@ -1,6 +1,8 @@
 from functions import *
+from processInput import processInput
 import curses
-
+from threading import Thread
+from queue import Queue, Empty
 INCREMENTTODAYEVERY = 1000
 LOADEVERY = 10
 today = loadToday()
@@ -17,27 +19,9 @@ when you add a new alarm after an alarm has been cleared, it starts newlining li
 '''
 
 
-loadAlarms(today['seconds'])
+loadAlarms()
 loadTimers(today['seconds'])
-'''
-while 1==1:
 
-    if (today['seconds'] % INCREMENTTODAYEVERY == 0):
-        today = loadToday()
-    else: 
-        today = incrementToday(today)
-    alarmTxt = ""
-    
-    if (today['seconds'] % LOADEVERY == 0):
-        loadAlarms(today['seconds'])
-        loadTimers(today['seconds'])
-    alarmTxt = displayAlarms(today['seconds'])
-    curses.initscr()
-    print (str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " (" + alarmTxt + ")", end="\r")
-    
-    decrementTimers()
-    time.sleep(.864)
-'''
 commandQueue = Queue()
 
 stdscr = curses.initscr()
@@ -46,23 +30,31 @@ stdscr.keypad(True)
 upperwin = stdscr.subwin(2, 80, 0, 0)
 lowerwin = stdscr.subwin(2,0)
 
-def outputThreadFunc():
-    outputs = ["So this is another output","Yet another output","Is this even working"] # Just for demo
+def outputThreadFunc(today):
     while True:
+        inputTxt = ''
         upperwin.clear()
-        upperwin.addstr(f"{choice(outputs)}")
+        if (today['seconds'] % INCREMENTTODAYEVERY == 0):
+            today = loadToday()
+        else: 
+            today = incrementToday(today)
+        alarmTxt = ""
+        if (today['seconds'] % LOADEVERY == 0):
+            loadAlarms()
+            loadTimers(today['seconds'])
+
         try:
-            inp = commandQueue.get(timeout=0.1)
-            if inp == 'exit':
-                return
-            else:
-                upperwin.addch('\n')
-                upperwin.addstr(inp)
+            input = commandQueue.get(timeout=0.1)
+            inputTxt = processInput(input)
         except Empty:
             pass
 
+        alarmTxt = displayAlarms(today['seconds'])
+        upperwin.addstr(str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " (" + alarmTxt + ")" + inputTxt)
+        
+        decrementTimers()
         upperwin.refresh()
-        sleep(.864)
+        time.sleep(.864)
         
 
 
@@ -80,7 +72,7 @@ def inputThreadFunc():
             lowerwin.clear()
 
             lowerwin.refresh()
-            if command == 'exit':
+            if command == 'q' or command == 'x':
                 return
 
             
@@ -88,7 +80,7 @@ def inputThreadFunc():
 
 
 # MAIN CODE
-outputThread = Thread(target=outputThreadFunc)
+outputThread = Thread(target=outputThreadFunc, args=(today,))
 inputThread = Thread(target=inputThreadFunc)
 outputThread.start()
 inputThread.start()

@@ -1,6 +1,6 @@
 import curses
 import math
-
+import time
 ALARMFILE = 'alarms.txt'
 DAYSTOUNIX = 4371677 # 11,969 * 365.25 rounded down
 DAYSINCYCLE = 1000
@@ -13,6 +13,12 @@ alarms = []
 alarmsTriggered = []
 timers = []
 originalTimers = []
+def createAlarm(value):
+    alarms.append(value)
+    alarmsTriggered.append(False)
+    originalTimers.append(None)
+    timers.append(fetchDiff(value))
+
 def createTimer (timer, original):    
     alarmsTriggered.append(False)
     alarms.append(None)
@@ -44,7 +50,8 @@ def displayAlarms(seconds):
         alarmTxt += possTxt    
     return alarmTxt
 
-def fetchDiff(seconds, alarm):
+def fetchDiff(alarm):
+    seconds = loadToday()['seconds']
     diff = alarm - seconds
     if (seconds >= alarm):
         diff += SECONDSINDAY
@@ -61,7 +68,7 @@ def incrementToday(today):
         today['cycle'] += 1
     return today
 
-def loadAlarms(seconds):
+def loadAlarms():
     deletedAlarms = []
     for id, element in enumerate(alarms):
         deletedAlarms.append(True)
@@ -73,11 +80,9 @@ def loadAlarms(seconds):
             if (value > SECONDSINDAY):
                 continue
             if (value not in alarms):
-                alarms.append(value)
-                alarmsTriggered.append(False)
-                originalTimers.append(None)
-                timers.append(fetchDiff(seconds, value))
+                createAlarm(value)
                 deletedAlarms.append(False)
+
                 continue
             deletedAlarms[alarms.index(value)] = False
     deletingValues = []
