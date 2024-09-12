@@ -32,6 +32,7 @@ lowerwin = stdscr.subwin(2,0)
 
 def outputThreadFunc(today):
     while True:
+
         inputTxt = ''
         upperwin.clear()
         if (today['seconds'] % INCREMENTTODAYEVERY == 0):
@@ -51,10 +52,10 @@ def outputThreadFunc(today):
         except Empty:
             pass
 
-        alarmTxt = displayAlarms(today['seconds'])
+        alarmTxt = displayAlarms()
         upperwin.addstr(str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " (" + alarmTxt + ")" + inputTxt)
-        
         decrementTimers()
+        
         upperwin.refresh()
         time.sleep(.864)
         

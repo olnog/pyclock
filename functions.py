@@ -22,7 +22,7 @@ def createAlarm(value):
     alarms.append(value)
     alarmsTriggered.append(False)
     originalTimers.append(None)
-    timers.append(fetchDiff(value))
+    timers.append(fetchDiff(value) )
 
 def createTimer (timer, original):    
     alarmsTriggered.append(False)
@@ -32,6 +32,9 @@ def createTimer (timer, original):
 
 def decrementTimers():
     for id, timer in enumerate(timers):
+        if (alarms[id] != None):
+            timers[id] = fetchDiff(alarms[id])
+            continue
         timers[id]-= 1
 
 def deleteAlarm(value):
@@ -44,7 +47,7 @@ def deleteAlarm(value):
                 fp.write(line)
 
 
-def displayAlarms(seconds):
+def displayAlarms():
     alarmTxt = ""
     for id, alarm in enumerate(alarms):
 
