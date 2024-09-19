@@ -72,10 +72,9 @@ def loadAlarms():
         while line := file.readline():
             if (line == "\n"):
                 continue
-            value = int(float(line.rstrip()) * 1000)
+            value = int(line.rstrip())
             if (value > SECONDSINDAY):
                 continue
             if (value not in alarms['setTo']):
                 createAlarm(value)
-
                 continue

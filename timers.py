@@ -33,8 +33,10 @@ def displayTimers():
             timerTxt += ", "                
         
         possTxt = " " + format(timer, ',') 
-        if (timer < 1):                        
+        if (timer < 1 and timers['started'][id] == None):                        
             possTxt = " !!!"
+        elif (timer < 1 and timers['started'][id] != None):
+            possTxt = " !!" + str(timers['started'][id]) + "k!!"
         possTxt += "/" 
         
         timerSetTo = format(timers['setTo'][id], ',')

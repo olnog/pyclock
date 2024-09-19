@@ -4,7 +4,17 @@ DAYSTOUNIX = 4371677 # 11,969 * 365.25 rounded down
 DAYSINCYCLE = 1000
 TOMETRIC = 1.157
 SECONDSINDAY = 100000
+SECONDSINMINUTE = 60
 
+
+def convertMetric(metricSeconds):
+    seconds = math.floor(metricSeconds * 1000 / TOMETRIC)
+    minutes = seconds / SECONDSINMINUTE
+    return round(minutes, 2)
+
+def convertImperial(minutes):
+    seconds = math.floor(minutes * SECONDSINMINUTE * TOMETRIC)
+    return seconds
 
 def fetchDiff(alarm):
     seconds = loadToday()['seconds']
