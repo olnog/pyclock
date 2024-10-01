@@ -2,19 +2,20 @@
 import datetime
 import time
 from math import cos, degrees, floor, radians, sin, tan, asin, acos
+from functions import loadToday
+
 COORDFILE = 'zip2latlong.txt'
 SECONDSINDAY = 86400
 MINUTESINHOURS = 60
 TIMEPASTLOCALMIDNIGHT = 0.1/24
 TIMEZONE = -7
-
 DAYSTOUNIX = 4371677
 DAYSINCYCLE = 1000
 METRICSECONDSINDAY = 100000
 TOMETRIC = 1.157
 
 def fetchEarthTime(zipcode):
-    days = {
+    days = {        
         "today": { "dawn": fetchDawn(zipcode, False, False), 
              "noon": fetchSolarNoon(zipcode, False, False), 
              'dusk' : fetchDusk(zipcode, False, False) },
@@ -31,7 +32,6 @@ def fetchEarthTime(zipcode):
     earthTimeString = ""
     sortArr = []
     daysArr = ['today', 'tomorrow']
-    #earthTimeString += days['today']['dawn']
     for i, day in enumerate(daysArr):        
         for id, (when, time) in enumerate(days[day].items()):                 
             diff = fetchDiff(time, True)            
@@ -49,8 +49,14 @@ def fetchEarthTime(zipcode):
         if (when == 'dusk'):
             prevDay = 'today'
         diff = floor (fetchDiff( days[whichDay][when], days[prevDay]['noon']) * TOMETRIC)
-            
-        earthTimeString += whichDay + "-" + when +  "-" + time + ": " + format(diff, ',') + " " + prevDay + "\n"
+        diffFromNow = floor(fetchDiff(days[whichDay][when], True) * TOMETRIC)
+        earthTimeString += whichDay + "'s " + when + ": "  
+        if (when == 'noon'):
+            earthTimeString += "0"
+        else:
+            earthTimeString += format(diff, ',') 
+
+        earthTimeString += " [" + format(diffFromNow, ',') + "]\n"
         #earthTimeString += fetchDiff()
         
     #for id, (key, when) in enumerate(times.items()):
@@ -105,6 +111,9 @@ def fetchDusk(zipcode, tomorrow, asNumber):
     timeStr = formatTime(seconds)
     return dateObj.strftime("%Y/%m/%d") + " " + timeStr
 
+    
+
+
 def fetchHASunriseDegrees(zipcode, julianCentury):
     coords = fetchCoords(zipcode)
     if coords == None:
@@ -146,6 +155,26 @@ def fetchObliqCorrDegrees(julianCentury):
     obliqCorrDegrees = meanObliqEclipticDegrees + 0.00256 * cos(radians(125.04 - 1934.136 * julianCentury))
     return obliqCorrDegrees
 
+def fetchNextEvent(zipcode):
+    today = loadToday()
+    events = {
+        "dawn-today": fetchDawn(zipcode, False, False),
+        "noon-today": fetchSolarNoon(zipcode, False, False),
+        "dusk-today": fetchDusk(zipcode, False, False),
+        "dawn-tomorrow": fetchDawn(zipcode, True, False)
+    }
+    diffEvents = {}
+    txtStr = ""
+    closestTime = None
+    closestEvent = ""
+    for id, (when, time) in enumerate(events.items()):
+        diff = floor(fetchDiff(time, True) * TOMETRIC)
+        if diff > 0 and (closestTime == None or diff < closestTime  ):
+            closestEvent = when
+            closestTime = diff
+    return closestEvent.split('-')[0] + " " + format(today['seconds'] + closestTime, ",") + " [" + format(closestTime, ",") + "]"
+            
+            
 def fetchSolarNoon(zipcode, tomorrow, asNumber):
 
     coords = fetchCoords(zipcode)

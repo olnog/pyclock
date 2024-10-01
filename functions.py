@@ -23,6 +23,7 @@ def fetchDiff(alarm):
         diff += SECONDSINDAY
     return diff
 
+
 def incrementToday(today):
     #im implementing this so its not calculating what time it is every second
     today['seconds'] += 1

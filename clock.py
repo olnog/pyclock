@@ -1,17 +1,18 @@
 from alarms import alarms, checkAlarms, displayAlarms, loadAlarms
-from earth import fetchDusk, fetchEarthTime
+from earth import fetchEarthTime, fetchNextEvent
 from functions import *
 from processInput import processInput
 import curses
 from threading import Thread
 from timers import decrementTimers, displayTimers, loadTimers
 from queue import Queue, Empty
-INCREMENTTODAYEVERY = 1000
+INCREMENTTODAYEVERY = 100
 today = loadToday()
 universalTime = True
+zipcode = None
 '''
 TODO:
-    for earth time, don't have it be dependent on today's solar noon if that's already passed 
+
 BUGS:
  DONE: i shouldn't be able to put an alarm that is larger than 100
 when you add a new alarm after an alarm has been cleared, it starts newlining like crazy
@@ -19,7 +20,7 @@ when you add a new alarm after an alarm has been cleared, it starts newlining li
 
 
 
-def outputThreadFunc(today, universalTime):
+def outputThreadFunc(today, universalTime, zipcode):
     while True:
         alarmTxt = ""
         inputTxt = ''        
@@ -39,20 +40,23 @@ def outputThreadFunc(today, universalTime):
                 universalTime = inputTxt.split(':')[1]
             elif 'UNIVERSAL' in inputTxt and universalTime != True:
                 universalTime = True
-
+            elif "ZIPCODE" in inputTxt:
+                zipcode = inputTxt.split(" ")[-1]
         except Empty:
             pass
         checkAlarms()
         alarmTxt = displayAlarms()
         timerTxt = displayTimers()
-        clockTxt = str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " " + alarmTxt + timerTxt + inputTxt
+        nextEventTxt = ""
+        if zipcode != None:
+            nextEventTxt = fetchNextEvent(zipcode)
+        clockTxt = str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " " + nextEventTxt + "\n" + alarmTxt + timerTxt + inputTxt
         earthTime = False
         if universalTime != True:
             earthTime = fetchEarthTime(universalTime)
         if earthTime == False and universalTime != True:
             universalTime = True
         if universalTime != True:
-            #print (earthTime)
             clockTxt = earthTime
         upperwin.addstr(clockTxt)
         decrementTimers()        
@@ -83,7 +87,7 @@ lowerwin = stdscr.subwin(2,0)
         
 # MAIN CODE
 
-outputThread = Thread(target=outputThreadFunc, args=(today, universalTime))
+outputThread = Thread(target=outputThreadFunc, args=(today, universalTime, zipcode))
 inputThread = Thread(target=inputThreadFunc)
 outputThread.start()
 inputThread.start()
