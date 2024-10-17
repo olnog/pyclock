@@ -49,8 +49,8 @@ def outputThreadFunc(today, universalTime, zipcode):
         timerTxt = displayTimers()
         nextEventTxt = ""
         if zipcode != None:
-            nextEventTxt = fetchNextEvent(zipcode)
-        clockTxt = str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " " + nextEventTxt + "\n" + alarmTxt + timerTxt + inputTxt
+            nextEventTxt = "\n\t" + fetchNextEvent(zipcode)
+        clockTxt = str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " " + nextEventTxt + "\n\t" + alarmTxt + timerTxt + inputTxt
         earthTime = False
         if universalTime != True:
             earthTime = fetchEarthTime(universalTime)
@@ -66,8 +66,8 @@ def outputThreadFunc(today, universalTime, zipcode):
 def inputThreadFunc():
     while True:
         global buffer
-        lowerwin.addstr("->")
         command = lowerwin.getstr()
+        lowerwin.addstr("->")
         if command:
             command = command.decode("utf-8")
             commandQueue.put(command)
@@ -82,8 +82,8 @@ loadTimers()
 commandQueue = Queue()
 stdscr = curses.initscr()
 stdscr.keypad(True)
-upperwin = stdscr.subwin(10, 80, 0, 0)
-lowerwin = stdscr.subwin(2,0)            
+upperwin = stdscr.subwin(4, 80, 0, 0)
+lowerwin = stdscr.subwin(1,80, 5, 0)            
         
 # MAIN CODE
 
