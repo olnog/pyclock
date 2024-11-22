@@ -14,7 +14,6 @@ zipcode = None
 TODO:
 label alarms and timers 
 play sound when timer goes off too
-if more than 100k for events, zero out
 
 BUGS:
  DONE: i shouldn't be able to put an alarm that is larger than 100

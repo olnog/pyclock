@@ -1,4 +1,5 @@
 from functions import loadToday
+from alarms import createAlarm
 TIMERFILE = 'timers.txt'
 
 timers = {
@@ -66,11 +67,17 @@ def parseTimerInput(input):
         startsAt = int(float(value[1].rstrip()) * 1000)                
         diff = seconds - startsAt
         remaining = timer - diff                
-        if (input not in timers['setTo'] and timer > 0):
-            createTimer(timer, remaining, value[1])
+        setAlarmTo = startsAt + timer
+        createAlarm ( setAlarmTo)
+        #if (input not in timers['setTo'] and timer > 0):
+            #createTimer(timer, remaining, value[1])
         return "CREATING TIMER FOR " + str(timer) + "s (" + str(input) + ")"
     
-    value = int(float(input.rstrip()) * 1000)            
-    if (value not in timers['setTo']):                
-        createTimer(value, value, None)
-        return "CREATING TIMER FOR " + str(value)
+    value = int(float(input.rstrip()) * 1000) 
+
+    setAlarmTo = (seconds + value)   
+    createAlarm(setAlarmTo)           
+    return "CREATING TIMER FOR " + str(value)
+    #if (value not in timers['setTo']):                
+        #createTimer(value, value, None)
+     
