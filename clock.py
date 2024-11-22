@@ -13,7 +13,8 @@ zipcode = None
 '''
 TODO:
 label alarms and timers 
-play sound when timer goes off too
+be able to delete specific alarms "ad <#>"  [alarm delete]
+
 
 BUGS:
  DONE: i shouldn't be able to put an alarm that is larger than 100

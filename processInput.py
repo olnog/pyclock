@@ -42,5 +42,10 @@ def processInput(input):
             alarmSetTo -= 100
         inputTxt = "\n setting alarm for " + str(alarmSetTo)  +  "k"
         createAlarm (int (alarmSetTo))
+    elif splitInput[0] == 'tm':
+        timer = convertImperial(int(splitInput[1]))
+        alarmSetTo = float(loadToday()['seconds']) + timer
+        createAlarm (int(alarmSetTo))
+        inputTxt = "\n timer will go off in " + splitInput[1]  + " minutes (" + str(timer) + "k) "
     return inputTxt
         
