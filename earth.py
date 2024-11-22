@@ -172,7 +172,10 @@ def fetchNextEvent(zipcode):
         if diff > 0 and (closestTime == None or diff < closestTime  ):
             closestEvent = when
             closestTime = diff
-    return closestEvent.split('-')[0] + " " + format(today['seconds'] + closestTime, ",") + " [" + format(closestTime, ",") + "]"
+    nextEventTime = today['seconds'] + closestTime
+    if nextEventTime > 100000:
+        nextEventTime -= 100000
+    return closestEvent.split('-')[0] + " " + format(nextEventTime, ",") + " [" + format(closestTime, ",") + "]"
             
             
 def fetchSolarNoon(zipcode, tomorrow, asNumber):
