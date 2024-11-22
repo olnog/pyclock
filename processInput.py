@@ -1,6 +1,9 @@
-from functions import convertImperial, convertMetric
+from functions import convertImperial, convertMetric, loadToday 
 from alarms import clearAlarms, createAlarm, deleteAlarm
 from timers import clearTimers, parseTimerInput
+
+BLOOD_SUGAR_METRIC_TIME = 8.33
+
 def processInput(input):
     splitInput = input.split(' ')
     inputTxt = ''
@@ -29,5 +32,15 @@ def processInput(input):
         inputTxt = "\n CHANGING MODE TO UNIVERSAL"
     elif splitInput[0] == 'z':
         inputTxt = "\n ZIPCODE IS NOW " + splitInput[1]
+    elif splitInput [0] and len(splitInput) == 1:
+        alarmSetTo = float(loadToday()['seconds'])  + (BLOOD_SUGAR_METRIC_TIME  * 1000)
+        inputTxt = "\n "  + str(alarmSetTo) + " is now"
+        createAlarm(int(alarmSetTo))
+    elif splitInput[0] == 'eat':
+        alarmSetTo = (float(splitInput[1])  + BLOOD_SUGAR_METRIC_TIME) * 1000
+        if alarmSetTo > 100:
+            alarmSetTo -= 100
+        inputTxt = "\n setting alarm for " + str(alarmSetTo)  +  "k"
+        createAlarm (int (alarmSetTo))
     return inputTxt
         
