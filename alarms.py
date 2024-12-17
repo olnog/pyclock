@@ -26,6 +26,7 @@ def checkAlarms():
 def clearAlarms():
     alarms['setTo'] = []
     alarms['pastDue'] = []
+    alarms['label'] = []
     open(ALARMFILE, 'w').close()
 
 
