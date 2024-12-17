@@ -4,12 +4,13 @@ from functions import fetchDiff, loadToday, SECONDSINDAY
 
 ALARMFILE = 'alarms.txt'
 alarms = {
+    'label': [],
     'pastDue': [], 
     'setTo': [],
     }
-def addToAlarmFile(value):
+def addToAlarmFile(value, label):
     with open(ALARMFILE, "a") as myfile:
-        myfile.write("\n" + str(value))
+        myfile.write("\n" + str(value) + ", " + label)
 
 def checkAlarms():
     seconds = loadToday()['seconds']
@@ -28,17 +29,18 @@ def clearAlarms():
     open(ALARMFILE, 'w').close()
 
 
-def createAlarm(value):
-    addToAlarmFile(value)
+def createAlarm(value, label):
+    addToAlarmFile(value, label)
     alarms['setTo'].append(value)
     alarms['pastDue'].append(False)
-    
+    alarms['label'].append(label)
 
 
 def deleteAlarm(value):
     id = alarms['setTo'].index(value)
     del alarms['pastDue'][id]
     del alarms['setTo'][id]
+    del alarms['label'][id]
     with open(ALARMFILE, "r") as fp:
         lines = fp.readlines()
     with open(ALARMFILE, "w") as fp:
@@ -57,11 +59,14 @@ def displayAlarms():
         possTxt = "-"
         if (alarm != None):
             possTxt = format(alarm, ',') 
-        possTxt += " [" + format(fetchDiff(alarm), ',') + "]"
+        alarmLabel = ""
+        if (alarms['label'][id] != ''):
+            alarmLabel = " (" + alarms['label'][id] + ")"
+        possTxt += alarmLabel + " [" + format(fetchDiff(alarm), ',') + "]"
 
         if (alarms['pastDue'][id]):            
             possTxt = "-"            
-            possTxt = format(alarm, ',')
+            possTxt = format(alarm, ',') + alarmLabel            
             possTxt += " [!!!]"            
         alarmTxt += possTxt    
     alarmTxt += ")"
@@ -72,9 +77,11 @@ def loadAlarms():
         while line := file.readline():
             if (line == "\n"):
                 continue
-            value = int(line.rstrip())
+            splitLine = line.split(',')
+            value = int(splitLine[0].rstrip())
+            label = splitLine[1].strip()
             if (value > SECONDSINDAY):
                 continue
             if (value not in alarms['setTo']):
-                createAlarm(value)
+                createAlarm(value, label)
                 continue

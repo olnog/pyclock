@@ -8,8 +8,11 @@ def processInput(input):
     splitInput = input.split(' ')
     inputTxt = ''
     if splitInput[0] == 'a' and len(splitInput) > 1:
-        inputTxt = "\n ADDING ALARM " + splitInput[1]
-        createAlarm(int(float(splitInput[1]) * 1000))
+        alarmLabel = ""
+        if (len(splitInput) > 2): 
+            alarmLabel = splitInput[2]
+        inputTxt = "\n ADDING ALARM " + splitInput[1] +  "(" + alarmLabel + ")"
+        createAlarm(int(float(splitInput[1]) * 1000),  alarmLabel)
     elif splitInput[0] == 'ac':
         inputTxt = "\n CLEARING ALARMS"
         clearAlarms()
@@ -35,13 +38,13 @@ def processInput(input):
     elif splitInput [0] and len(splitInput) == 1:
         alarmSetTo = float(loadToday()['seconds'])  + (BLOOD_SUGAR_METRIC_TIME  * 1000)
         inputTxt = "\n "  + str(alarmSetTo) + " is now"
-        createAlarm(int(alarmSetTo))
+        createAlarm(int(alarmSetTo), 'eat')
     elif splitInput[0] == 'eat':
         alarmSetTo = (float(splitInput[1])  + BLOOD_SUGAR_METRIC_TIME) * 1000
         if alarmSetTo > 100:
             alarmSetTo -= 100
         inputTxt = "\n setting alarm for " + str(alarmSetTo)  +  "k"
-        createAlarm (int (alarmSetTo))
+        createAlarm (int (alarmSetTo), 'eat')
     elif splitInput[0] == 'tm':
         timer = convertImperial(int(splitInput[1]))
         alarmSetTo = float(loadToday()['seconds']) + timer

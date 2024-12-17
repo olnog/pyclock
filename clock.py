@@ -14,7 +14,7 @@ zipcode = None
 TODO:
 label alarms and timers 
 be able to delete specific alarms "ad <#>"  [alarm delete]
-
+show when the last event in addition to the next event
 
 BUGS:
  DONE: i shouldn't be able to put an alarm that is larger than 100
@@ -69,7 +69,8 @@ def outputThreadFunc(today, universalTime, zipcode):
 def inputThreadFunc():
     while True:
         global buffer
-        command = lowerwin.getstr()
+        command = lowerwin.getstr().strip()
+        
         lowerwin.addstr("->")
         if command:
             command = command.decode("utf-8")
