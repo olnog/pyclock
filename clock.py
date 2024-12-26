@@ -86,8 +86,8 @@ loadTimers()
 commandQueue = Queue()
 stdscr = curses.initscr()
 stdscr.keypad(True)
-upperwin = stdscr.subwin(4, 80, 0, 0)
-lowerwin = stdscr.subwin(1,80, 5, 0)            
+upperwin = stdscr.subwin(4, 40, 0, 0)
+lowerwin = stdscr.subwin(1,40, 5, 0)            
         
 # MAIN CODE
 
