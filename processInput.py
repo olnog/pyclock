@@ -26,16 +26,7 @@ def processInput(input):
         deleteAlarm(splitInput[1])
     elif splitInput[0] == 'e' and len(splitInput) > 1:
         inputTxt = "\n CHANGING MODE TO EARTH TIME:" + splitInput[1]        
-    elif splitInput[0] == 't' and len(splitInput) > 1:
-        inputTxt = "\n " + parseTimerInput(splitInput[1])    
-    elif splitInput[0] == 'tc':
-        inputTxt = "\n CLEARING TIMERS"
-        clearTimers()
-    elif splitInput[0] == 'u':
-        inputTxt = "\n CHANGING MODE TO UNIVERSAL"
-    elif splitInput[0] == 'z':
-        inputTxt = "\n ZIPCODE IS NOW " + splitInput[1]
-    elif splitInput [0] and len(splitInput) == 1:
+    elif splitInput [0] == "eat" and len(splitInput) == 1:
         alarmSetTo = float(loadToday()['seconds'])  + (BLOOD_SUGAR_METRIC_TIME  * 1000)
         inputTxt = "\n "  + str(alarmSetTo) + " is now"
         createAlarm(int(alarmSetTo), 'eat')
@@ -45,10 +36,21 @@ def processInput(input):
             alarmSetTo -= 100
         inputTxt = "\n setting alarm for " + str(alarmSetTo)  +  "k"
         createAlarm (int (alarmSetTo), 'eat')
+    elif splitInput[0] == 't' and len(splitInput) > 1:
+        inputTxt = "\n " + parseTimerInput(splitInput[1])    
+    elif splitInput[0] == 'tc':
+        inputTxt = "\n CLEARING TIMERS"
+        clearTimers()
     elif splitInput[0] == 'tm':
         timer = convertImperial(int(splitInput[1]))
         alarmSetTo = float(loadToday()['seconds']) + timer
         createAlarm (int(alarmSetTo))
         inputTxt = "\n timer will go off in " + splitInput[1]  + " minutes (" + str(timer) + "k) "
+    elif splitInput[0] == 'u':
+        inputTxt = "\n CHANGING MODE TO UNIVERSAL"
+    elif splitInput[0] == 'z':
+        inputTxt = "\n ZIPCODE IS NOW " + splitInput[1]
+
+
     return inputTxt
         

@@ -2,21 +2,24 @@ from alarms import alarms, checkAlarms, displayAlarms, loadAlarms
 from earth import fetchEarthTime, fetchNextEvent
 from functions import *
 from processInput import processInput
-import curses
+import curses, re
 from threading import Thread
 from timers import decrementTimers, displayTimers, loadTimers
 from queue import Queue, Empty
 INCREMENTTODAYEVERY = 100
 today = loadToday()
 universalTime = True
+
 zipcode = None
 '''
 TODO:
-label alarms and timers 
 be able to delete specific alarms "ad <#>"  [alarm delete]
 show when the last event in addition to the next event
 
+
+
 BUGS:
+earth time is bugged - something relating to yesterday not being valid
  DONE: i shouldn't be able to put an alarm that is larger than 100
 when you add a new alarm after an alarm has been cleared, it starts newlining like crazy
 '''
@@ -24,6 +27,7 @@ when you add a new alarm after an alarm has been cleared, it starts newlining li
 
 
 def outputThreadFunc(today, universalTime, zipcode):
+    validCommands = ["a", "ac", "c", "cm", "d", "e", "eat", "t", "tc", "tm",  "u", "z"]
     while True:
         alarmTxt = ""
         inputTxt = ''        
@@ -36,7 +40,8 @@ def outputThreadFunc(today, universalTime, zipcode):
 
         try:
             input = commandQueue.get(timeout=0.1)
-            if input == 'q' or input == 'x':
+            splitInput = input.split(" ")
+            if input == 'q' or input == 'x' or splitInput[0] not in validCommands:
                 return
             inputTxt = processInput(input)
             if "EARTH" in inputTxt and universalTime == True:
@@ -44,7 +49,7 @@ def outputThreadFunc(today, universalTime, zipcode):
             elif 'UNIVERSAL' in inputTxt and universalTime != True:
                 universalTime = True
             elif "ZIPCODE" in inputTxt:
-                zipcode = inputTxt.split(" ")[-1]
+                zipcode = inputTxt.split(" ")[4]
         except Empty:
             pass
         checkAlarms()
@@ -53,12 +58,14 @@ def outputThreadFunc(today, universalTime, zipcode):
         nextEventTxt = ""
         if zipcode != None:
             nextEventTxt = "\n\t" + fetchNextEvent(zipcode)
-        clockTxt = str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " " + nextEventTxt + "\n\t" + alarmTxt + timerTxt + inputTxt
+
+        clockTxt = str(today['cycle']) + "-" + str(today['date']) + ": " + format(today['seconds'], ',') + " " + nextEventTxt + "\n\t" + alarmTxt + timerTxt + inputTxt 
         earthTime = False
         if universalTime != True:
             earthTime = fetchEarthTime(universalTime)
         if earthTime == False and universalTime != True:
             universalTime = True
+                
         if universalTime != True:
             clockTxt = earthTime
         upperwin.addstr(clockTxt)
@@ -86,7 +93,7 @@ loadTimers()
 commandQueue = Queue()
 stdscr = curses.initscr()
 stdscr.keypad(True)
-upperwin = stdscr.subwin(4, 40, 0, 0)
+upperwin = stdscr.subwin(6, 40, 0, 0)
 lowerwin = stdscr.subwin(1,40, 5, 0)            
         
 # MAIN CODE
